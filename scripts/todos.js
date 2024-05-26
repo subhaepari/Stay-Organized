@@ -3,26 +3,30 @@ window.onload = init();
 var serverLocation;
 
 function init() {
-  // console.log("init  url param "+ urlParams);
-  //  // location.search returns the query string part of the URL
-  // const urlParams = new URLSearchParams(location.search);
+  // location.search returns the query string part of the URL
+  const urlParams = new URLSearchParams(location.search);
+  console.log("init  url param " + urlParams);
 
-  // let username = "";
-  // if (urlParams.has("loginusername") === true)
-  // {
-  //     username = urlParams.get("loginusername")
-  //     // call a method that fetches this course
-  //     console.log("login username is " + username);
-  // }
+  let username = "";
+  if (urlParams.has("loginusername")) {
+    username = urlParams.get("loginusername");
+    // call a method that fetches this course
+    console.log("login username is " + username);
+  }
 
   serverLocation = "http://localhost:8083";
   const usersList = document.getElementById("usersList");
-  initUsersDropdown(usersList);
+  initUsersDropdown(usersList, username, true);
 
-  let allOption = new Option("All Users", 0);
+  let allOption = new Option("All", 0);
   usersList.appendChild(allOption);
-
   usersList.onchange = onChangeUsersDropdown;
+
+  let categoryList = document.getElementById("categoryList");
+  let priorityList = document.getElementById("priorityList");
+
+  categoryList.onchange = onChangeDropdowns;
+  priorityList.onchange = onChangeDropdowns;
 
   //Initialize layout format
   initLayout();
@@ -30,10 +34,14 @@ function init() {
   //Initializing content on the offcanvas for creating new tasks
   createNewTaskFormInit();
 
+
+  //Initial default fetch of tasks after login
+  //onChangeUsersDropdown(); //Won't work as the userlist async task would still be pending and userlist not yet initialized
+  //fetchTasksForUser(username); //won't work, need to pass user id 
   // alert("Exiting init window onload");
 }
 
-function initUsersDropdown(list) {
+function initUsersDropdown(list, username, fetchtasks) {
   console.log("Entered initUsersDropdown...");
   //let taskRowDiv = document.getElementById("taskRowDiv");
 
@@ -44,7 +52,18 @@ function initUsersDropdown(list) {
     .then((data) => {
       for (let i = 0; i < data.length; i++) {
         let theOption = new Option(data[i].name, data[i].id);
+        if (data[i].username === username)
+          theOption.setAttribute("selected", "selected");
+
         list.appendChild(theOption);
+      }
+
+      //Required for page initialization with tasks after page load
+      //As it can be done only after user list is loaded
+      if(fetchtasks){
+        const usersList = document.getElementById("usersList");
+        let selectedUser = usersList.value;
+        fetchTasksForUser(selectedUser);
       }
     })
     .catch((error) => {
@@ -53,6 +72,18 @@ function initUsersDropdown(list) {
 }
 
 function onChangeUsersDropdown() {
+  const usersList = document.getElementById("usersList");
+  let selectedUser = usersList.value;
+
+  let categoryList = document.getElementById("categoryList");
+  let priorityList = document.getElementById("priorityList");
+  categoryList.value = "All Categories";
+  priorityList.value = "All Priorities";
+
+  fetchTasksForUser(selectedUser);
+}
+
+function onChangeDropdowns() {
   const usersList = document.getElementById("usersList");
   let selectedUser = usersList.value;
   fetchTasksForUser(selectedUser);
@@ -73,15 +104,28 @@ function fetchTasksForUser(selectedUser) {
   let table = document.getElementById("taskTable");
   table.innerHTML = "";
 
+  let category = document.getElementById("categoryList").value;
+  let priority = document.getElementById("priorityList").value;
+  //alert(`${category} ${priority}`);
+
   fetch(fetchurl)
     .then((response) => response.json())
     .then((data) => {
-      for (let i = 0; i < data.length; i++) {
+      //filter tasks by category and priority
+
+      if (category != "All Categories" || priority != "All Priorities") {
+        // filteredtasks = data.filter((task)=>{task.category === category && task.priority === priority});
+        filteredtasks = data.filter((task) => {
+          return taskfilter(task, category, priority);
+        });
+      } else filteredtasks = data;
+
+      for (let i = 0; i < filteredtasks.length; i++) {
         //Adding task to task board
-        taskRowDiv.appendChild(createCard(data[i]));
+        taskRowDiv.appendChild(createCard(filteredtasks[i]));
 
         //Adding task to task list
-        addTasktoTable(table, data[i]);
+        addTasktoTable(table, filteredtasks[i]);
       }
     })
     .catch((error) => {
@@ -89,34 +133,53 @@ function fetchTasksForUser(selectedUser) {
     });
 }
 
-function btnFetchTasksClick() {
-  console.log("Entered btnFetchTasksClick...");
-  let taskRowDiv = document.getElementById("taskRowDiv");
-  clearDiv(taskRowDiv);
+function taskfilter(task, category, priority) {
+  //alert("Task Filter   :    "+`${category} ${priority}`);
 
-  fetch(`${serverLocation}/api/todos`)
-    .then((response) => response.json())
-    .then((data) => {
-      for (let i = 0; i < data.length; i++) {
-        taskRowDiv.appendChild(createCard(data[i]));
-      }
-    })
-    .catch((error) => {
-      console.log("Caught exception while fetching tasks");
-    });
+  if (task.category === category && task.priority === priority) return true;
+  if (category === "All Categories" && task.priority === priority) return true;
+  if (task.category === category && priority === "All Priorities") return true;
+  return false;
 }
+
+// function btnFetchTasksClick() {
+//   console.log("Entered btnFetchTasksClick...");
+//   let taskRowDiv = document.getElementById("taskRowDiv");
+//   clearDiv(taskRowDiv);
+
+//   fetch(`${serverLocation}/api/todos`)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       for (let i = 0; i < data.length; i++) {
+//         taskRowDiv.appendChild(createCard(data[i]));
+//       }
+//     })
+//     .catch((error) => {
+//       console.log("Caught exception while fetching tasks");
+//     });
+// }
 
 function clearTable(table) {}
 
 function addTasktoTable(table, task) {
   let row = table.insertRow(-1);
 
-  let descCell = row.insertCell(0);
-  let statusCell = row.insertCell(1);
-  let detailsCell = row.insertCell(2);
-  let deleteCell = row.insertCell(3);
+  let priorityCell = row.insertCell(0);
+  let descCell = row.insertCell(1);
+  let statusCell = row.insertCell(2);
+  let detailsCell = row.insertCell(3);
+  let deleteCell = row.insertCell(4);
   //let editCell = row.insertCell(4);
-  let reassignCell = row.insertCell(4);
+  let reassignCell = row.insertCell(5);
+
+  let priorityImage = `<img src="images/Hopstarter-Soft-Scraps-Button-Blank-Blue.24.png" />`;
+  if (task.priority === "Medium")
+    priorityImage = `<img src="images/Hopstarter-Soft-Scraps-Button-Blank-Yellow.24.png" />`;
+  else if (task.priority === "High")
+    priorityImage = `<img src="images/Hopstarter-Soft-Scraps-Button-Blank-Red.24.png" />`;
+
+  priorityCell.innerHTML = priorityImage;
+  // priorityCell.innerHTML = `<img src="images/Hopstarter-Soft-Scraps-Button-Blank-Red.32.png" />`;
 
   let statusChkLabel = document.createElement("label");
   statusChkLabel.classList.add("taskstatuschk-container");
@@ -155,13 +218,17 @@ function addTasktoTable(table, task) {
                       data-bs-completed="${task.completed}"
                       data-bs-toggle="modal" 
                       data-bs-target="#taskDetailModal">
-                      <i class="fa fa-list"></i>
+                      <img src="images/Fatcow-Farm-Fresh-Application-view-detail.24.png" />
                       </a>`;
+
+  //<i class="fa fa-list"></i>
 
   let delanchor = document.createElement("a");
   delanchor.href = `javascript:deleteTask(${task.id})`;
   //delanchor.text = "Delete";
-  delanchor.innerHTML = `<i class="fa fa-trash"></i>`;
+
+  delanchor.innerHTML = `<img src="images/Robinweatherall-Recycling-Bin-small.24.png" />`;
+  //delanchor.innerHTML = `<i class="fa fa-trash"></i>`;
   delanchor.title = "Delate Task";
 
   let editanchor = document.createElement("a");
@@ -237,6 +304,8 @@ function createCard(task) {
   colDiv.classList.add("col-md-4");
   colDiv.classList.add("content-card");
   colDiv.classList.add("mb-4");
+  // colDiv.classList.add("mx-auto");
+  // colDiv.classList.add("center-block");
 
   const shadowDiv = document.createElement("div");
   shadowDiv.classList.add("card-big-shadow");
@@ -245,7 +314,7 @@ function createCard(task) {
   cardDiv.classList.add("card");
   cardDiv.classList.add("card-just-text");
   cardDiv.setAttribute("data-background", "color");
-  cardDiv.setAttribute("data-color", "green");
+  cardDiv.setAttribute("data-color", "teal");
   cardDiv.setAttribute("data-radius", "none");
 
   const contentDiv = document.createElement("div");
@@ -261,34 +330,46 @@ function createCard(task) {
   descElement.classList.add("description");
   descElement.classList.add("mb-4");
 
+  let deadlineColor = "text-primary";
   const deadlineElement = document.createElement("p");
-  deadlineElement.textContent = "Due by " + task.deadline;
-  deadlineElement.classList.add("category");
+  deadlineElement.innerHTML =
+    "Due by " + `<span class=${deadlineColor}>${task.deadline}</span>`;
+  deadlineElement.classList.add("common");
   deadlineElement.classList.add("mb-4");
 
+  let priorityColor = "text-secondary";
+  if (task.priority === "Medium") priorityColor = "text-warning";
+  else if (task.priority === "High") priorityColor = "text-danger";
+
   const priorityElement = document.createElement("p");
-  priorityElement.textContent = "Priority: " + task.priority;
-  priorityElement.classList.add("category");
+  priorityElement.innerHTML =
+    "Priority: " + `<span class=${priorityColor}>${task.priority}</span>`;
+  priorityElement.classList.add("common");
   priorityElement.classList.add("mb-4");
+  //priorityElement.classList.add("text-danger");
+  //priorityElement.classList.add("text-secondary");
 
   contentDiv.appendChild(categoryElement);
   contentDiv.appendChild(descElement);
   contentDiv.appendChild(deadlineElement);
   contentDiv.appendChild(priorityElement);
 
-  if (task.completed) {
-    const doneElement = document.createElement("p");
-    //doneElement.textContent = task.completed;
-    doneElement.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
-    //doneElement.innerHTML = ` <span class="fa fa-shopping-cart" style="font-size:30px;color:rgb(41, 156, 64)"></span>`;
-    //doneElement.innerHTML = ` <span class="fa-regular fa-circle-check" style="font-size:30px;color:rgb(41, 156, 64)"></span>`;
+  let statusChkLabel = document.createElement("label");
+  statusChkLabel.classList.add("taskstatuschk-container");
 
-    doneElement.classList.add("category");
-    doneElement.classList.add("mb-4");
+  let statusChk = document.createElement("input");
+  //anchor.href = `details.html?taskid=${task.id}`;
+  statusChk.type = `checkbox`;
+  statusChk.title = "Task Completion Status";
+  statusChk.checked = task.completed;
 
-    contentDiv.appendChild(doneElement);
-  }
-  //https://fontawesome.com/icons/circle-check?f=classic&s=regular
+  statusChk.addEventListener("change", (event) => {
+    updateTaskStatus(event, task.id);
+  });
+
+  statusChkLabel.appendChild(statusChk);
+
+  contentDiv.appendChild(statusChkLabel);
 
   colDiv.appendChild(shadowDiv);
   shadowDiv.appendChild(cardDiv);
@@ -310,20 +391,23 @@ function createNewTaskFormInit() {
   const usersListForNewTask = document.getElementById("usersListForNewTask");
   initUsersDropdown(usersListForNewTask);
 
-  const categoriesForNewTask = document.getElementById("categoriesForNewTask");
-  initFormCategoriesDropdown();
+  // const categoriesForNewTask = document.getElementById("categoriesForNewTask");
+  initCategoriesDropdowns();
 }
 
-function initFormCategoriesDropdown() {
+function initCategoriesDropdowns() {
   console.log("Entered initFormCategoriesDropdown...");
   const categoriesDropdown = document.getElementById("categoriesForNewTask");
+  const categoryList = document.getElementById("categoryList");
 
   fetch(`${serverLocation}/api/categories`)
     .then((response) => response.json())
     .then((data) => {
       for (let i = 0; i < data.length; i++) {
-        let theOption = new Option(data[i].name, data[i].id);
-        categoriesDropdown.appendChild(theOption);
+        let theOptionforTaskForm = new Option(data[i].name, data[i].name);
+        let theOptionforMain = new Option(data[i].name, data[i].name);
+        categoriesDropdown.appendChild(theOptionforTaskForm);
+        categoryList.appendChild(theOptionforMain);
       }
     })
     .catch((error) => {
@@ -352,36 +436,32 @@ function createNewTask() {
   })
     .then((response) => response.json())
     .then((json) => {
-      // If the POST finishes successfully, display a message
-      // with the newly assigned id
-      // let message = "Student " + json.id + " added";
-      // let confirmationMessage =
-      //   document.getElementById(confirmationMessage);
-      // confirmationMessage.innerHTML = message;
       console.log("created new task successfully with id :" + json.id);
-      //alert("created new task successfully with id :" + json.id);
+
+      if (json.id === undefined || json.id === null) {
+        console.log("Task could not be added.");
+        throw "Task could not be added.";
+      }
+
+      console.log("created new task successfully with id :" + json.id);
+
+      let confirmationMessage = document.getElementById("add-task-message");
+      confirmationMessage.innerHTML = "Added Task Successfully";
     })
     .catch((err) => {
       // If the POST returns an error, display a message
-      let confirmationMessage = document.getElementById(confirmationMessage);
-      confirmationMessage.innerHTML = "Unexpected error";
+      let confirmationMessage = document.getElementById(
+        "add-task-error-message"
+      );
+      confirmationMessage.innerHTML = err;
 
-      console.log("Caught unexpected error while created new task:" + err);
+      console.log("Caught unexpected error while creating new task:" + err);
     });
-
-  // alert("user id: " + document.getElementById("usersListForNewTask").value);
-  // alert("category: " + document.getElementById("categoriesForNewTask").value);
-  // alert("description: " + document.getElementById("descriptionForNewTask").value);
-  // alert("deadline: " + document.getElementById("deadlineForNewTask").value);
-  // alert("priority: " + document.getElementById("priorityForNewTask").value);
 }
 
-//Right now PUT for task supports only change in complete status
-//So cannot reassignUser nor update any task field othere than 'complete' field
-
 function updateTaskStatus(event, taskid) {
-  taskstatus = event.target.value;
-
+  taskstatus = event.target.checked? true:false;
+   
   console.log(
     `Going to update task with id ${taskid} to status completed as ${taskstatus}`
   );
@@ -393,8 +473,7 @@ function updateTaskStatus(event, taskid) {
     completed: taskstatus,
   };
 
-  //alert(" Task to update: " + JSON.stringify(updateTaskObj));
-
+  //This rest API just toggles the status irrespective of the status passed
   fetch(`${serverLocation}/api/todos/` + taskid, {
     method: "PUT",
     body: JSON.stringify(updateTaskObj),
@@ -406,10 +485,19 @@ function updateTaskStatus(event, taskid) {
         console.log(
           `Updated task status successfully to completed: ${json.completed}`
         );
-      } else throw error("Could not update task status");
+       // var element = document.querySelector('.toast');
+        element = document.getElementById('success-toast');
+        var toast = new bootstrap.Toast(element);
+        toast.show();
+
+      } else 
+          throw "Could not update task status";
     })
     .catch((err) => {
-      console.log(
+        element = document.getElementById('failure-toast');
+        var toast = new bootstrap.Toast(element);
+        toast.show();
+        console.log(
         "Caught unexpected error while re-assigning new user to task:" + err
       );
     });
@@ -475,8 +563,6 @@ function deleteTask(taskid) {
     });
 }
 
-
-
 function initLayout() {
   let checkBox = document.getElementById("listlayoutchk");
   checkBox.checked = true;
@@ -529,9 +615,15 @@ taskDetailModal.addEventListener("show.bs.modal", function (event) {
   var modalDesc = document.getElementById("modaltaskdesc");
   modalDesc.innerText = description;
 
+  let deadlineColor = "text-primary";
   var modalDeadline = document.getElementById("modaltaskdeadline");
-  modalDeadline.innerText = deadline;
+  modalDeadline.innerHTML =  "Due by " + `<span class=${deadlineColor}>${deadline}</span>`;
+
+
+  let priorityColor = "text-secondary";
+  if (priority === "Medium") priorityColor = "text-warning";
+  else if (priority === "High") priorityColor = "text-danger";
 
   var modalPriority = document.getElementById("modaltaskpriority");
-  modalPriority.innerText = priority;
+  modalPriority.innerHTML = "Priority: " + `<span class=${priorityColor}>${priority}</span>`;
 });

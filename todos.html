@@ -34,11 +34,11 @@
                   id="listlayoutchk"
                   type="checkbox"
                   onclick="onChangeChkBox()"
-                  selected
-                /><span class="slider">
+                  selected/>
+                <span class="slider">                
+                  <i class="fa fa-table"></i>
                   <i class="fa fa-list"></i>
-                  <i class="fa fa-table"></i
-                ></span>
+                </span>
               </label>
             </div>
 
@@ -53,11 +53,36 @@
           <!-- <div style="background-color: transparent"></div> -->
           <div class="col-8">
             <!-- <p class="h4">TO-DO Keeper</p>    -->
-            <h4 id="todokeeper">TO-DO Keeper</h4>
-            <p id="todopunch">Stay Organized, Tracked, Focussed...</p>
-            <div class="align-bottom">
-              <select id="usersList"></select>
+            <!-- <div class="align-top">
+              <h4 id="todokeeper">TO-DO Keeper</h4>
+              <p id="todopunch">Stay Organized, Tracked, Focussed...</p>
+            </div> -->
+            <div>
+              <h1 class="logo">TO-DO Keeper</h1>
+              <h6 class="logo-foot">Stay Organized, Tracked, Focussed...</h6>
             </div>
+            <fieldset style="border:5px;border-color:grey"> 
+              <legend  class="text-muted small">Fetch tasks </legend>
+              <div class=" mt-2 mb-2">
+                <label for="usersList" class="text-muted small">Assignee: </label>
+                <select id="usersList"></select>
+              </div>
+              <div class=" mb-2">
+                <label for="categoryList" class="text-muted small">Category: </label>
+                <select id="categoryList">
+                  <option value = "All Categories" selected>All</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label for="priorityList" class="text-muted small">Priority:&nbsp&nbsp&nbsp</label>
+                <select id="priorityList">
+                  <option value = "All Priorities" selected>All</option>
+                  <option><span><img src = "images/Hopstarter-Soft-Scraps-Button-Blank-Red.16.png" />High</span></option>
+                  <option>Medium</option>                  
+                  <option>Low</option>
+                </select>
+              </div>
+            </fieldset>
           </div>
           <div class="col-2">
             <img src="images/sticky-thumbs-up.jpeg" class="img-fluid rounded" />
@@ -138,28 +163,7 @@
       <!-- Task board Container -->
       <div id="taskBoardDiv" class="container">
         <div id="taskRowDiv" class="row">
-          <div class="col-md-4 col-sm-6 content-card">
-            <div class="card-big-shadow">
-              <div
-                class="card card-just-text"
-                data-background="color"
-                data-color="yellow"
-                data-radius="none"
-              >
-                <div class="content">
-                  <h6 class="category">Best cards</h6>
-                  <h4 class="title"><a href="#">Blue Card</a></h4>
-                  <p class="description">
-                    What all of these have in common is that they're pulling
-                    information out of the app or the service and making it
-                    relevant to the moment.
-                  </p>
-                </div>
-              </div>
-              <!-- end card -->
-            </div>
           </div>
-        </div>
       </div>
     </main>
 
@@ -193,20 +197,20 @@
           <div class="row g-3">
             <div class="col-8 mx-auto">
               <label for="usersListForNewTask" class="form-label"
-                >Assignee</label
+                >Assignee: </label
               >
               <select id="usersListForNewTask" required>
-                <option value="">Choose user...</option>
+                <option value="">Choose...</option>
               </select>
               <div class="invalid-feedback">Please select a valid user.</div>
             </div>
 
             <div class="col-8 mx-auto">
               <label for="categoriesForNewTask" class="form-label"
-                >Category</label
+                >Category: </label
               >
               <select id="categoriesForNewTask" required>
-                <option value="">Choose category...</option>
+                <option value="">Choose...</option>
               </select>
               <div class="invalid-feedback">
                 Please select a valid category.
@@ -263,6 +267,10 @@
           >
             Create Task
           </button>
+          <br />
+          <br />
+          <div class="text-center" id="add-task-error-message"></div>
+          <div class="text-center" id="add-task-message"></div>
         </form>
       </div>
       <!-- </div> -->
@@ -364,33 +372,53 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content modal-style">
           <div class="modal-body text-center mx-auto">
-            <!-- <div id="modalTaskDiv" class="container">
-          <div id="modaltaskRowDiv" class="row"> -->
-            <!-- <div class="col-md-4 col-sm-6 content-card"> -->
             <div class="content-card">
               <div class="card-big-shadow">
                 <div
                   class="card card-just-text"
                   data-background="color"
-                  data-color="yellow"
+                  data-color="teal"
                   data-radius="none"
                 >
                   <div class="content">
                     <p id="modaltaskcategory" class="category mb-4"></p>
                     <p id="modaltaskdesc" class="description"></p>
-                    <p id="modaltaskdeadline" class="category mb-4"></p>
-                    <p id="modaltaskpriority" class="category mb-4"></p>
+                    <p id="modaltaskdeadline" class="common mb-4"></p>
+                    <p id="modaltaskpriority" class="common mb-4"></p>
                   </div>
                 </div>
                 <!-- end card -->
               </div>
             </div>
-            <!-- </div>
-        </div> -->
           </div>
         </div>
       </div>
     </div>
+
+  <div class="toast-container 
+                position-absolute 
+                top-0 start-50 translate-middle-x">
+    <div id = "success-toast" class="toast">
+      <div class="toast-header justify-content-end">
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body text-center">
+       Updated task status successfully.
+      </div>
+    </div>
+  </div>
+
+
+    <div id = "failure-toast" class="toast">
+      <div class="toast-header">    
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body text-center">
+        Task status update failed.
+      </div>
+    </div>
+
+  </div>
 
     <!-- <footer>
       <div class="footer footer-sticky">

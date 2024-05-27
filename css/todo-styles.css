@@ -74,8 +74,8 @@ color: #04AA6D;
 /*************Test**************/
 
 /* Style the links inside the sidenav */
-#mySidenav button, #layoutchkdiv, #addTaskBtn {
-  position: absolute; /* Position them relative to the browser window */
+#mySidenav button, #layoutchkdiv, #addTaskBtn, #dashboardBtn{
+  position: absolute; /* Position them relative to the  browser window */
   left: -80px; /* Position them outside of the screen */
   transition: 0.3s; /* Add transition on hover */
   padding: 15px; /* 15px padding */
@@ -88,7 +88,7 @@ color: #04AA6D;
  
 }
 
-#mySidenav button:hover, #layoutchkdiv:hover, #addTaskBtn:hover {
+#mySidenav button:hover, #layoutchkdiv:hover, #addTaskBtn:hover, #dashboardBtn:hover {
   left: 0; /* On mouse-over, make the elements appear as they should */
   text-align: center;
   font-size: 20px; 
@@ -96,7 +96,7 @@ color: #04AA6D;
 
 /* Small devices (landscape phones, 576px and up) */
 @media screen and (max-width: 576px) {
-  #layoutchkdiv:hover, #addTaskBtn:hover {
+  #layoutchkdiv:hover, #addTaskBtn:hover, #dashboardBtn:hover {
     left: -70px;
     text-align: end;   
   }
@@ -131,16 +131,29 @@ color: #04AA6D;
 /******** new buttons ****/
 
 #layoutchkdiv {
-  top: 50px;
+  /* top: 50px; */
+  top: 40px;
   background-color: #04AA6D;
+  height:50px;
+  /* padding-bottom: 5px; */
 }
 
 
 #addTaskBtn {
-  top: 150px;
+  /* top: 150px; */
+  top: 120px;
   background-color: #04AA6D;
   border:0px;
 }
+
+
+#dashboardBtn {
+  top: 200px;
+  background-color: #04AA6D;
+  border:0px;
+  height:50px;
+}
+
 /*************Test**************/
 
 
@@ -219,6 +232,16 @@ input:checked + .slider:before {
   background-color: aliceblue;
   border-radius: 10px;
 }
+
+
+/******** Dropdown Styles ******/
+#usersList, #categoryList, #priorityList{
+  border:0px;
+}
+
+
+
+
 
 /****** Off Canvas ******/
 

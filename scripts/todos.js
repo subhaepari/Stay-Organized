@@ -2,6 +2,8 @@ window.onload = init();
 
 var serverLocation;
 
+//var tasksToShow = null;
+
 function init() {
   // location.search returns the query string part of the URL
   const urlParams = new URLSearchParams(location.search);
@@ -34,6 +36,8 @@ function init() {
   //Initializing content on the offcanvas for creating new tasks
   createNewTaskFormInit();
 
+
+  
 
   //Initial default fetch of tasks after login
   //onChangeUsersDropdown(); //Won't work as the userlist async task would still be pending and userlist not yet initialized
@@ -129,7 +133,11 @@ function fetchTasksForUser(selectedUser) {
         
       }
   
+      //Holding the current displayed tasks in a global scope for other functions to access as required
+      //tasksToShow = filteredtasks;
+
       updateProgressBar(filteredtasks);
+      
 
     })
     .catch((error) => {
@@ -155,20 +163,17 @@ function updateProgressBar(tasksToShow){
   if((!isNullOrUndefined(tasksToShow)) && (tasksToShow.length > 0)){
    
     completedTasks = tasksToShow.filter(task => task.completed);
-    alert(tasksToShow.length  + "  " +completedTasks.length);
+   
   }  
  
-
   if((!isNullOrUndefined(completedTasks)) && (completedTasks.length > 0)){
     completePercentage = (completedTasks.length / tasksToShow.length)*100;
   }
 
   let progressBar = document.getElementById("progressBar");
   progressBar.setAttribute("style", `width: ${completePercentage}%`)
-  progressBar.innerHTML = `${completePercentage}%`;
+  progressBar.innerHTML = `${completePercentage.toFixed(2)}%`;
 
-  alert(completePercentage);
-  
 }
 
 function taskCompleteFilter(tasksToShow){
@@ -527,10 +532,17 @@ function updateTaskStatus(event, taskid) {
         console.log(
           `Updated task status successfully to completed: ${json.completed}`
         );
+
+
+        //After update need to pull data again to show progress bar with fresh data
+        const usersList = document.getElementById("usersList"); 
+        fetchTasksForUser(usersList.value);
+        
        // var element = document.querySelector('.toast');
         element = document.getElementById('success-toast');
         var toast = new bootstrap.Toast(element);
         toast.show();
+        
 
       } else 
           throw "Could not update task status";
@@ -543,6 +555,8 @@ function updateTaskStatus(event, taskid) {
         "Caught unexpected error while re-assigning new user to task:" + err
       );
     });
+
+
 }
 
 //Not supported by the Rest API

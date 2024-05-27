@@ -126,7 +126,11 @@ function fetchTasksForUser(selectedUser) {
 
         //Adding task to task list
         addTasktoTable(table, filteredtasks[i]);
+        
       }
+  
+      updateProgressBar(filteredtasks);
+
     })
     .catch((error) => {
       console.log("Caught exception while fetching tasks for user." + error);
@@ -141,6 +145,44 @@ function taskfilter(task, category, priority) {
   if (task.category === category && priority === "All Priorities") return true;
   return false;
 }
+
+
+function updateProgressBar(tasksToShow){
+
+  let completePercentage = 0;
+  let completedTasks;
+
+  if((!isNullOrUndefined(tasksToShow)) && (tasksToShow.length > 0)){
+   
+    completedTasks = tasksToShow.filter(task => task.completed);
+    alert(tasksToShow.length  + "  " +completedTasks.length);
+  }  
+ 
+
+  if((!isNullOrUndefined(completedTasks)) && (completedTasks.length > 0)){
+    completePercentage = (completedTasks.length / tasksToShow.length)*100;
+  }
+
+  let progressBar = document.getElementById("progressBar");
+  progressBar.setAttribute("style", `width: ${completePercentage}%`)
+  progressBar.innerHTML = `${completePercentage}%`;
+
+  alert(completePercentage);
+  
+}
+
+function taskCompleteFilter(tasksToShow){
+  let completedTasks;
+  if(tasksToShow.length>0){
+    completedTasks = tasksToShow.filter(task => task.completed);
+  } 
+  return completedTasks;
+}
+
+function isNullOrUndefined(value) {
+  return value === undefined || value === null;
+}
+
 
 // function btnFetchTasksClick() {
 //   console.log("Entered btnFetchTasksClick...");

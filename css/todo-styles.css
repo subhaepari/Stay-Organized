@@ -25,7 +25,7 @@ color: #04AA6D;
   font-weight: 400;
   font-size: 2;
   /* text-align: end; */
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 /*** side nav ***/
@@ -94,6 +94,17 @@ color: #04AA6D;
   font-size: 20px; 
 }
 
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (max-width: 576px) {
+  #layoutchkdiv:hover, #addTaskBtn:hover {
+    left: -70px;
+    text-align: end;   
+  }
+
+  #addTaskBtn:hover {
+    font-size: 15px; 
+  }
+}
 
 /* #layoutchkdiv {
   top: 50px;
@@ -141,11 +152,8 @@ color: #04AA6D;
 .switch {
   position: relative;
   display: inline-block;
-  /* width: 60px;
-  height: 34px; */
-
   width: 60px;
-  height: 30px;
+  height: 34px;
 }
 
 /* Hide default HTML checkbox */
@@ -167,6 +175,8 @@ color: #04AA6D;
   background-color: #2196f3;
   -webkit-transition: 0.4s;
   transition: 0.4s;
+
+  padding-right: 5px; /* Added to fix for lower screen size */
 }
 
 .slider:before {

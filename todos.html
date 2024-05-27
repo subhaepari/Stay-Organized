@@ -35,7 +35,9 @@
                   type="checkbox"
                   onclick="onChangeChkBox()"
                   selected/>
-                <span class="slider">                
+                <span class="slider">      
+                  <!-- <img src="images/border-all-solid.svg" height="30px" width="30px"/>   
+                  <img src="images/list-solid.svg"  height="30px" width="30px"/>          -->
                   <i class="fa fa-table"></i>
                   <i class="fa fa-list"></i>
                 </span>
@@ -62,7 +64,7 @@
               <h6 class="logo-foot">Stay Organized, Tracked, Focussed...</h6>
             </div>
             <fieldset style="border:5px;border-color:grey"> 
-              <legend  class="text-muted small">Fetch tasks </legend>
+              <legend  class="text-muted small">Retrieve and Review your and your team tasks with ease.</legend>
               <div class=" mt-2 mb-2">
                 <label for="usersList" class="text-muted small">Assignee: </label>
                 <select id="usersList"></select>
@@ -81,10 +83,17 @@
                   <option>Medium</option>                  
                   <option>Low</option>
                 </select>
+                <img src="images/Hopstarter-Soft-Scraps-Button-Blank-Red.16.png" title="High"/> 
+                <img src="images/Hopstarter-Soft-Scraps-Button-Blank-Yellow.16.png" title="Medium"/> 
+                <img src="images/Hopstarter-Soft-Scraps-Button-Blank-Blue.16.png" title="Low"/> 
               </div>
-            </fieldset>
+             </fieldset>
+             <!-- <label for="priorityList" class="text-muted small">Progress</label> -->
+             <div class="progress mt-2">
+              <div id="progressBar" class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>           
+            </div>
           </div>
-          <div class="col-2">
+          <div class="col-2 align-top">
             <img src="images/sticky-thumbs-up.jpeg" class="img-fluid rounded" />
           </div>
         </div>

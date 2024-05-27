@@ -172,7 +172,7 @@ function updateProgressBar(tasksToShow){
 
   let progressBar = document.getElementById("progressBar");
   progressBar.setAttribute("style", `width: ${completePercentage}%`)
-  progressBar.innerHTML = `${completePercentage.toFixed(2)}%`;
+  progressBar.innerHTML = `${completePercentage.toFixed(0)}%`;
 
 }
 

@@ -1,1 +1,1 @@
-# Capstone-Stay-Organized
+# Stay-Organized

@@ -1,13 +1,11 @@
-# ToDo Keeper
+# To-Do Keeper
 
 Stay organized, tracked and focussed with this handy application where you could monitor and manage tasks for multiple users on a regular basis.
 It is a completely responsive application, adapting to different screen sizes.
 
 Technology Stack:
-
-  Front-end: HTML5, CSS, BootStrap, JavaScript
-  
-  Back-end: Rest API with NodeJS Express framework. (On a different project)
+  - Front-end: HTML5, CSS, BootStrap, JavaScript  
+  - Back-end: Rest API with NodeJS Express framework. (On a different project)
 
 ## Landing page
 
@@ -24,25 +22,25 @@ The landing page from where a user can sign-up and sign-in to the application.
 
 ### Landing page - Sign Up Offcanvas form
 
-The sign-in and sign-up pages are implemented as offcanvas forms. 
-All the user inputs are validated and error messages shown upfront before form submission. 
-Validations like username availability, password criteria, passwords matching are taken care.
+- The sign-in and sign-up pages are implemented as offcanvas forms. 
+- All the user inputs are validated and error messages shown upfront before form submission. 
+- Validations like username availability, password criteria, passwords matching are taken care.
 
 <img width="1512" alt="Sign Up" src="https://github.com/user-attachments/assets/5e1807fc-44e8-4b54-b7e9-90eab9d05385">
 
 
 ## Task List View
 
-On successful sign-in user lands on his/her dashboard to view and manage own tasks by default. 
-You could even view and manage tasks of any other user registered in the application just by re-selecting the user from the users dropdown.
+- On successful sign-in user lands on his/her dashboard to view and manage own tasks by default. 
+- You could even view and manage tasks of any other user registered in the application just by re-selecting the user from the users dropdown.
 
-You could filter tasks based on assigned user, task category, task priority.
-A progress bar indicates the percentage completion of the filtered or displayed tasks.
+- You could filter tasks based on assigned user, task category, task priority.
+- A progress bar indicates the percentage completion of the filtered or displayed tasks.
 
-All the CRUD operations for a task could be performed from here.
-Status of any task could be toggled between complete and incomplete.
-A task could be re-assigned to any other user.
-A task could be deleted if not required to be tracked anymore.
+- All the CRUD operations for a task could be performed from here.
+- Status of any task could be toggled between complete and incomplete.
+- A task could be re-assigned to any other user.
+- A task could be deleted if not required to be tracked anymore.
 
 ### Task List View - On Small screen
 
@@ -67,7 +65,7 @@ On clicking the detail icon for a task in the list, a pop-up appears with a stic
 ## Task Board View
 
 Hover and click on the first button from the top left corner to Toggle the Layout. If on the list view it will switch to a board view displaying tasks as an array of sticky notes.
-From here any task status could be toggled.
+- From here any task status could be toggled too.
 
 
 ## Add Task
@@ -78,11 +76,11 @@ From the top left page corner hover and click on the second button saying 'Add T
 
 <img width="1512" alt="Add New Task" src="https://github.com/user-attachments/assets/11703f7b-93cb-404f-92d9-bba61353a4ee">
 
-A task could be assigned to a user on creation and could also be re-assigned to any other user later.
-A task could belong to any pre-defined category - Personal, Financial, Work, Errand, etc.
-A crisp and meaningful description for the task can be given.
-A task could be assigned a priority - High, Medium, Low
-A task could be assigned a due date.
+- A task could be assigned to a user on creation and could also be re-assigned to any other user later.
+- A task could belong to any pre-defined category - Personal, Financial, Work, Errand, etc.
+- A crisp and meaningful description for the task can be given.
+- A task could be assigned a priority - High, Medium, Low.
+- A task could be assigned a due date.
 
 
 
